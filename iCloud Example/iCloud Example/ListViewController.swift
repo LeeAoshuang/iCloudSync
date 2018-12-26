@@ -222,7 +222,13 @@ class ListViewController: UITableViewController, iCloudDelegate {
         self.fileNameList = filenames
         self.fileObjectList = files
 
-        self.refreshControl?.endRefreshing()
+        if self.refreshControl?.isRefreshing ?? false {
+            self.refreshControl?.endRefreshing()
+        }
+        if self.tableView.contentOffset == CGPoint.zero {
+            self.tableView.contentOffset = CGPoint(x: 0, y: 1)
+        }
+        self.tableView.setContentOffset(CGPoint.zero, animated: true)
         self.tableView.reloadData()
     }
 

@@ -15,10 +15,9 @@ extension iCloud {
         if self.verboseLogging { NSLog("[iCloud] Beginning file update with NSMetadataQuery") }
         
         // Notify delegate of the results
-        if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFileUpdateDidBegin)) ?? false {
-            DispatchQueue.main.async { self.delegate?.iCloudFileUpdateDidBegin?() }
+        DispatchQueue.main.async {
+            self.delegate?.iCloudFileUpdateDidBegin()
         }
-        
     }
     
     @objc open func receivedUpdate(_ notification: Notification) {
@@ -34,9 +33,7 @@ extension iCloud {
         self.updateFiles()
 
         // Notify the delegate of the results on the main thread
-        if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFileUpdateDidEnd)) ?? false {
-            DispatchQueue.main.async { self.delegate?.iCloudFileUpdateDidEnd?() }
-        }
+        DispatchQueue.main.async { self.delegate?.iCloudFileUpdateDidEnd() }
 
         if self.verboseLogging { NSLog("[iCloud] Finished file update with NSMetadataQuery") }
     }

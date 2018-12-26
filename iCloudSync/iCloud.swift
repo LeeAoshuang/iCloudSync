@@ -82,12 +82,10 @@ open class iCloud: NSObject {
             self.ubiquityContainer != nil,
             let token: UbiquityIdentityToken = self.fileManager.ubiquityIdentityToken
             else {
-            
+                
                 NSLog("[iCloud] The system could not retrieve a valid iCloud container URL. iCloud is not available. iCloud may be unavailable for a number of reasons:\n• The device has not yet been configured with an iCloud account, or the Documents & Data option is disabled\n• Your app, does not have properly configured entitlements\n• Your app, has a provisioning profile which does not support iCloud.\nGo to http://bit.ly/18HkxPp for more information on setting up iCloud")
                 
-                if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudAvailabilityDidChange(to:token:with:))) ?? false {
-                    DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange?(to: false, token: nil, with: self.ubiquityContainer) }
-                }
+                DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange(to: false, token: nil, with: self.ubiquityContainer) }
                 
                 return
         }
@@ -99,9 +97,7 @@ open class iCloud: NSObject {
             
             self.notificationCenter.addObserver(self, selector: #selector(getter: self.cloudAvailable), name: NSNotification.Name.NSUbiquityIdentityDidChange, object: nil)
             
-            if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudDidFinishInitializing(with:with:))) ?? false {
-                DispatchQueue.main.async { self.delegate?.iCloudDidFinishInitializing?(with: token, with: self.ubiquityContainer) }
-            }
+            DispatchQueue.main.async { self.delegate?.iCloudDidFinishInitializing(with: token, with: self.ubiquityContainer) }
             
             // Log the setup
             NSLog("[iCloud] Ubiquity Container Created and Ready")
@@ -119,8 +115,8 @@ open class iCloud: NSObject {
         // Setup iCloud Metadata query and request file extension limitation from delegate
         self.query.searchScopes = [ NSMetadataQueryUbiquitousDocumentsScope ]
 
+        
         if
-            self.delegate?.responds(to: #selector(getter: iCloudDelegate.iCloudQueryLimitedToFileExtension)) ?? false,
             let _fileExtensions: [String] = self.delegate?.iCloudQueryLimitedToFileExtension,
             !_fileExtensions.isEmpty {
             self.fileExtension = _fileExtensions.joined(separator: ",")
@@ -174,23 +170,19 @@ open class iCloud: NSObject {
                 let token: UbiquityIdentityToken = self.fileManager.ubiquityIdentityToken,
                 let ubiquityContainer: URL = self.ubiquityContainer
                 else {
-
-                NSLog(self.verboseAvailabilityLogging ? ( "[iCloud] iCloud is not available. iCloud may be unavailable for a number of reasons:\n• The device has not yet been configured with an iCloud account, or the Documents & Data option is disabled\n• Your app, " + (( Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ) ?? "") + ", does not have properly configured entitlements\nGo to http://bit.ly/18HkxPp for more information on setting up iCloud" ) : "[iCloud] iCloud unavailable" )
-                
-                    if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudAvailabilityDidChange(to:token:with:))) ?? false {
-                        DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange?(to: false, token: nil, with: self.ubiquityContainer) }
-                    }
-             
-                return false
+                    
+                    NSLog(self.verboseAvailabilityLogging ? ( "[iCloud] iCloud is not available. iCloud may be unavailable for a number of reasons:\n• The device has not yet been configured with an iCloud account, or the Documents & Data option is disabled\n• Your app, " + (( Bundle.main.object(forInfoDictionaryKey: "CFBundleDisplayName") as? String ) ?? "") + ", does not have properly configured entitlements\nGo to http://bit.ly/18HkxPp for more information on setting up iCloud" ) : "[iCloud] iCloud unavailable" )
+                    
+                    DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange(to: false, token: nil, with: self.ubiquityContainer) }
+                    
+                    return false
             }
             
             if self.verboseAvailabilityLogging {
                 NSLog("[iCloud] iCloud is available. Ubiquity URL: " + ubiquityContainer.path + "\nUbiquity Token: " + token.description)
             }
             
-            if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudAvailabilityDidChange(to:token:with:))) ?? false {
-                DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange?(to: true, token: token, with: ubiquityContainer) }
-            }
+            DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange(to: true, token: token, with: ubiquityContainer) }
             
             return true
         }
@@ -228,10 +220,8 @@ open class iCloud: NSObject {
                     NSLog("[iCloud] iCloud is not available. iCloud may be unavailable for a number of reasons:\n• The device has not yet been configured with an iCloud account, or the Documents & Data option is disabled\n• Your app, does not have properly configured entitlements\nGo to http://bit.ly/18HkxPp for more information on setting up iCloud")
                     
                     NSLog("[iCloud] WARNING: Using local documents directory until iCloud is available.")
-                    
-                    if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudAvailabilityDidChange(to:token:with:))) ?? false {
-                        DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange?(to: false, token: nil, with: self.ubiquityContainer) }
-                    }
+
+                    DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange(to: false, token: nil, with: self.ubiquityContainer) }
                     
                     return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
             }
@@ -298,12 +288,7 @@ open class iCloud: NSObject {
             self.previousQueryResults = results
             
             // Notify delegate about results
-            if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFilesDidChange(_:with:))) ?? false {
-                DispatchQueue.main.async {
-                    self.delegate?.iCloudFilesDidChange?(discoveredFiles, with: names)
-                }
-            }
-
+            DispatchQueue.main.async { self.delegate?.iCloudFilesDidChange(discoveredFiles, with: names) }
             
         }
         
@@ -504,8 +489,8 @@ open class iCloud: NSObject {
                             
                             NSLog("[iCloud] Both the iCloud file and the local file were last modified at the same time, however their contents do not match. You'll need to handle the conflict using the iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) delegate method.")
                             
-                            if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFileConflictBetweenCloudFile(_:with:))) ?? false {
-                                self.delegate?.iCloudFileConflictBetweenCloudFile?([
+                            DispatchQueue.main.async {
+                                self.delegate?.iCloudFileConflictBetweenCloudFile([
                                     "fileContents": document.contents,
                                     "fileURL": cloudURL,
                                     "modifiedDate": cloud_modDate
@@ -521,8 +506,8 @@ open class iCloud: NSObject {
                     
                     NSLog("[iCloud] Failed to retrieve information about either or both, local and remote file. You will need to handle the conflict using iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) delegate method.")
                     
-                    if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFileConflictBetweenCloudFile(_:with:))) ?? false {
-                        self.delegate?.iCloudFileConflictBetweenCloudFile?([
+                    DispatchQueue.main.async {
+                        self.delegate?.iCloudFileConflictBetweenCloudFile([
                             "fileURL": cloudURL
                             ], with: [
                                 "fileURL": localURL
@@ -638,8 +623,8 @@ open class iCloud: NSObject {
                             
                             NSLog("[iCloud] Both the iCloud file and the local file were last modified at the same time, however their contents do not match. You'll need to handle the conflict using the iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) delegate method.")
                             
-                            if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFileConflictBetweenCloudFile(_:with:))) ?? false {
-                                self.delegate?.iCloudFileConflictBetweenCloudFile?([
+                            DispatchQueue.main.async {
+                                self.delegate?.iCloudFileConflictBetweenCloudFile([
                                     "fileContents": document.contents,
                                     "fileURL": cloudURL,
                                     "modifiedDate": cloud_modDate
@@ -654,9 +639,9 @@ open class iCloud: NSObject {
                 } else {
                     
                     NSLog("[iCloud] Failed to retrieve information about either or both, local and remote file. You will need to handle the conflict using iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) delegate method.")
-                    
-                    if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFileConflictBetweenCloudFile(_:with:))) ?? false {
-                        self.delegate?.iCloudFileConflictBetweenCloudFile?([
+
+                    DispatchQueue.main.async {
+                        self.delegate?.iCloudFileConflictBetweenCloudFile([
                             "fileURL": cloudURL
                             ], with: [
                                 "fileURL": localURL
@@ -885,8 +870,8 @@ open class iCloud: NSObject {
                             
                             NSLog("[iCloud] Both the iCloud file and the local file were last modified at the same time, however their contents do not match. You'll need to handle the conflict using the iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) delegate method.")
                             
-                            if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFileConflictBetweenCloudFile(_:with:))) ?? false {
-                                self.delegate?.iCloudFileConflictBetweenCloudFile?([
+                            DispatchQueue.main.async {
+                                self.delegate?.iCloudFileConflictBetweenCloudFile([
                                     "fileContents": document.contents,
                                     "fileURL": cloudURL,
                                     "modifiedDate": cloud_modDate
@@ -902,9 +887,9 @@ open class iCloud: NSObject {
                 } else {
                     
                     NSLog("[iCloud] Failed to retrieve information about either or both, local and remote file. You will need to handle the conflict using iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) delegate method.")
-                    
-                    if self.delegate?.responds(to: #selector(iCloudDelegate.iCloudFileConflictBetweenCloudFile(_:with:))) ?? false {
-                        self.delegate?.iCloudFileConflictBetweenCloudFile?([
+
+                    DispatchQueue.main.async {
+                        self.delegate?.iCloudFileConflictBetweenCloudFile([
                             "fileURL": cloudURL
                             ], with: [
                                 "fileURL": localURL
