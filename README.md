@@ -1,5 +1,28 @@
 <img width=725 src="https://raw.githubusercontent.com/iRareMedia/iCloudDocumentSync/master/iCloud%20App%20-%20iOS/CloudBanner.png"/>
 
+# iCloudSync
+
+This is a fork of iRareMedia's iCloudDocumentSync. A complete rewrite in Swift, including some fixes.
+Documentation is out-of-date, due to some renamings and changes that I have made, but it's pretty straight forward.
+
+I also rewrote the sample app. Despite of icons, it's pretty much same that original was.
+I don't do storyboards, so it's entirely in code.
+
+For now, there's no cocoapods tree set up yet, so you'll have to import this with github url if you want to use this.
+Add this to your Podfile to install.
+    pod 'iCloudSync', :git => 'https://github.com/oskarirauta/iCloudSync.git'
+
+# iCloudSync biggest changes from iCloudDocumentSync
+
+ - name (iCloudDocumentSync -> iCloudSync)
+ - some other method namings, mostly I have tried to make things shorter
+
+# iCloudSync issues
+
+Seems to be hogging memory quite a bit. If someone has solutions, they are welcome. I am interested in all other improvements as well, but don't just throw some ideas; write some code too and make a PR.
+
+# iCloudDocumentSync
+
 iCloud Document Sync makes it easy for developers to integrate the iCloud document storage APIs into iOS applications. This is how iCloud document-storage and management should've been out of the box from Apple. Integrate iCloud into iOS (OS X coming soon) Objective-C document projects with one-line code methods. Sync, upload, manage, and remove documents to and from iCloud with only  a few lines of code (compared to the hundreds of lines and hours that it usually takes). Get iCloud up and running in your iOS app in only a few minutes.
 
 If you like the project, please [star it](https://github.com/iRareMedia/iCloudDocumentSync) on GitHub! Watch the project on GitHub for updates. If you use iCloud Document Sync in your app, send an email to contact[at]iraremedia.com or let us know on Twitter @iRareMedia.
