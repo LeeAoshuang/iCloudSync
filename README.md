@@ -8,14 +8,14 @@ Documentation is out-of-date, due to some renamings and changes that I have made
 I also rewrote the sample app. Despite of icons, it's pretty much same that original was.
 I don't do storyboards, so it's entirely in code.
 
-For now, there's no cocoapods tree set up yet, so you'll have to import this with github url if you want to use this.
 Add this to your Podfile to install.
-    pod 'iCloudSync', :git => 'https://github.com/oskarirauta/iCloudSync.git'
+    pod 'iCloudSync'
 
 # iCloudSync biggest changes from iCloudDocumentSync
 
  - name (iCloudDocumentSync -> iCloudSync)
  - some other method namings, mostly I have tried to make things shorter
+ - legacy iOS support is missing. I created something new- even though it's based on something older- I decided to use newest ways to do things.
 
 # iCloudSync issues
 
