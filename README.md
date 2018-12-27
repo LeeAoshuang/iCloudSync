@@ -1,15 +1,15 @@
-<img width=725 src="https://raw.githubusercontent.com/iRareMedia/iCloudDocumentSync/master/iCloud%20App%20-%20iOS/CloudBanner.png"/>
+![Banner](https://raw.githubusercontent.com/iRareMedia/iCloudDocumentSync/master/iCloud%20App%20-%20iOS/CloudBanner.png)
 
-# iCloudSync ( iRareMedia's iCloud Document Sync fork )
+# iCloudSync
 
-A complete rewrite in Swift, including some fixes.
+A complete rewrite in Swift, including some fixes from iRareMedia's iCloud Document Sync fork.
 Documentation is still partially out-of-date, but it's pretty straight forward if you ever have used iCloud Document Sync.
 
 iCloudSync makes it easy for developers to integrate the iCloud document storage APIs into iOS applications. This is how iCloud document-storage and management should've been out of the box from Apple. Integrate iCloud into iOS Swift document projects with one-line code methods. Sync, upload, manage, and remove documents to and from iCloud with only a few lines of code. Get iCloud up and running in your iOS app in no time.
 
 If you like the project, please [star it](https://github.com/oskarirauta/iCloudSync) on GitHub!
 
-# Project Features
+## Project Features
 iCloudSync is a great way to use iCloud document storage in your iOS app. Below are a few key project features and highlights.
 * Sync, Upload, Read, Write, Share, Save, Remove, and Edit any iCloud document in only one line of code.  
 * Just drag and drop the iCloudSync Framework (`iCloudSync.framework`) into your project and you can begin using iCloud - no complicated setup  
@@ -18,7 +18,7 @@ iCloudSync is a great way to use iCloud document storage in your iOS app. Below 
 * Manage any kind of file with iCloud through use of Data  
 * iOS Sample-app to illustrate how easy it is to use iCloudSync
 
-## Table of Contents
+### Table of Contents
 
 * [**Project Information**](#project-information)
   * [Requirements](#requirements)
@@ -31,28 +31,28 @@ iCloudSync is a great way to use iCloud document storage in your iOS app. Below 
   * [Traditional](#traditional-setup)
   * [Swift Projects](#swift-projects-setup)
 * [**Setup**](#setup)
-* [**Documentation**](#documentation)
+* [**Documentation**]
   * [Methods](#methods)
   * [Delegate](#delegate)
 
-# Project Information
+## Project Information
 Learn more about the project requirements, licensing, and contributions.
 
-## Requirements
+### Requirements
 Lowest minimum requirements are untested, but framework is designed with Xcode 10.1 and iOS 11.4 is set as a minimum deployment target, code should run on lower targets as well, but is not tested.
 
-## License 
+### License 
 This project is licensed under MIT License accordingly to it's successor, iCloud Document Sync. See the [full license here](https://github.com/oskarirauta/iCloudSync/block/master/LICENSE.md).
 
 Attribution is not required, but it's appreciated. iRare Media and I have spend a lot of time, energy and resource on this proejct, so a little *Thanks!* would be great. If you use iCloudSync or iCloud Document Sync in your app, send email to contract@iraremedia.com or send a tweet at @iRareMedia.
 
-## Contributions
+### Contributions
 Any contribution is more than welcome! You can contribute through pull requests and issues on GitHub.
 
-## Sample App
+### Sample App
 The iOS Sample App included with this project demonstrates how to use many of the features in iCloudSync. You can refer to the sample app for an understanding of how to use and setup iCloudSync. The app should work with iCloud as-is (you may need to provide your own Bundle ID though).
 
-# Installation
+## Installation
 There are multiple ways to add iCloudSync to your project and it is easy. Choose the process below which best suits your needs. Follow the steps to get everything up and running in no time.
 
 ### CocoaPods Setup
@@ -66,7 +66,7 @@ Clone the project to your computer and build the *Framework* target. The `iCloud
 ### Traditional Setup
 Drag and drop the *iCloudSync* folder into your Xcode project. When you do so, check the "Copy items into destination group's folder" box.
 
-# Setup
+## Setup
 After installing iCloudSync, it only takes a few lines of code to get it up an running.  
   1. Import iCloudSync (see relevant install instructions above) to your header file(s).  
   2. Subscribe to the `iCloudDelegate` delegate.  
@@ -80,9 +80,6 @@ After installing iCloudSync, it only takes a few lines of code to get it up an r
     iCloud.shared.setupiCloud(nil)
         
   5. It is recommended that the first call to `iCloud` after setup, is setting delegate. This way all subsequent operations and method calls can interact with the delegate and provide appropriate information.
-
-# Documentation
-Key methods, properties, types, and delegate methods available on the iCloud class are documented below. If you're using [Xcode 5](https://developer.apple.com/technologies/tools/whats-new.html) with iCloudSync, documentation is available directly within Xcode (just Option-Click any method for Quick Help). Additional documentation can also be found on the Wiki page (including how to register your app for iCloud, iCloud fundamentals, etc.).   
 
 ## Methods
 There are many methods available on iCloudSync. The most important / highlight methods are documented below. All other methods are documented with in-code comments.
