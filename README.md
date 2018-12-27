@@ -9,6 +9,7 @@ I also rewrote the sample app. Despite of icons, it's pretty much same that orig
 I don't do storyboards, so it's entirely in code.
 
 Add this to your Podfile to install.
+
     pod 'iCloudDocumentSync', :git => 'https://github.com/oskarirauta/iCloudSync.git'
 
 # Description
