@@ -64,6 +64,25 @@ open class iCloud: NSObject {
     deinit {
         self.notificationCenter.removeObserver(self)
     }
+
+    /**
+     Check if iCloud files are being updated right now
+     
+     - Returns: true if file updating is in progress at the moment.
+     */
+    open internal(set) var isUpdatingFiles: Bool = false
+    
+    /**
+     Check if iCloud files should be updated.
+     
+     More than one file updating shouldn't be ongoing, so there's a queue system in place.
+     This returns true when file updating is requested and false when updating has started.
+     If update is requested during update, this get's set to true again, and after update
+     has finished, it will restart updating.
+     
+     - Returns: true if file updating is requested and in queue.
+     */
+    open internal(set) var shouldUpdateFiles: Bool = false
     
     /**
      Setup iCloud Document Sync and begin the initial document syncing process.
@@ -90,6 +109,8 @@ open class iCloud: NSObject {
                 return
         }
 
+        let _ = self.cloudDocumentsURL
+        
         DispatchQueue.global().async {
             
             NSLog("[iCloud] Initializing Document Enumeration")
@@ -204,17 +225,27 @@ open class iCloud: NSObject {
     }
 
     /**
+     Return application's local documents directory URL
+     
+     - Returns: URL with the local documents directory URL for the current app.
+     */
+
+    open var localDocumentsURL: URL? {
+        get { return self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first }
+    }
+    
+    /**
      Return application's ubiquitous documents directory URL
      
      - Warning: If iCloud is not properly setup, this method will return the local (non-ubiquitous) documents directory. This may cause other document handling methods to return nil values. Ensure that iCloud is properly setup \b before calling any document handling methods.
      
      - Returns: URL with the iCloud ubiquitous documents directory URL for the current app. Returns the local documents directory if iCloud is not properly setup or available.
      */
-    open var documentsDirectoryURL: URL? {
+    open var cloudDocumentsURL: URL? {
         get {
 
             guard
-                let documentURL: URL = (self.ubiquityContainer ?? FileManager.default.url(forUbiquityContainerIdentifier: nil))?.appendingPathComponent(iCloud.DOCUMENT_DIRECTORY)
+                let documentsURL: URL = (self.ubiquityContainer ?? FileManager.default.url(forUbiquityContainerIdentifier: nil))?.appendingPathComponent(iCloud.DOCUMENT_DIRECTORY)
                 else {
                     
                     NSLog("[iCloud] iCloud is not available. iCloud may be unavailable for a number of reasons:\n• The device has not yet been configured with an iCloud account, or the Documents & Data option is disabled\n• Your app, does not have properly configured entitlements\nGo to http://bit.ly/18HkxPp for more information on setting up iCloud")
@@ -223,22 +254,21 @@ open class iCloud: NSObject {
 
                     DispatchQueue.main.async { self.delegate?.iCloudAvailabilityDidChange(to: false, token: nil, with: self.ubiquityContainer) }
                     
-                    return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+                    return self.localDocumentsURL
             }
 
             if
                 var isDir: ObjCBool = ObjCBool(false) as ObjCBool?,
-                self.fileManager.fileExists(atPath: documentURL.path, isDirectory: &isDir) {
+                self.fileManager.fileExists(atPath: documentsURL.path, isDirectory: &isDir) {
                 
-                guard !isDir.boolValue else { return documentURL }
-                try? self.fileManager.removeItem(at: documentURL)
+                guard !isDir.boolValue else { return documentsURL }
+                try? self.fileManager.removeItem(at: documentsURL)
             }
             
-            try? self.fileManager.createDirectory(at: documentURL, withIntermediateDirectories: true, attributes: nil)
-            return documentURL
+            try? self.fileManager.createDirectory(at: documentsURL, withIntermediateDirectories: true, attributes: nil)
+            return self.fileManager.fileExists(atPath: documentsURL.path) ? documentsURL : nil
         }
     }
- 
     
     /* Syncing with iCloud */
     
@@ -249,13 +279,19 @@ open class iCloud: NSObject {
      */
     open func updateFiles() {
 
+        self.shouldUpdateFiles = true
+        guard !self.isUpdatingFiles else { return }
+
+        self.isUpdatingFiles = true
+
         // Log file update
         if self.verboseLogging { NSLog("[iCloud] Beginning file update with NSMetadataQuery") }
         
-        guard self.quickCloudCheck else { return }
-
-        DispatchQueue.global(qos: .background).async {
+        func doUpdateFiles() {
             
+            self.shouldUpdateFiles = false
+            guard self.quickCloudCheck else { return }
+
             var discoveredFiles: [NSMetadataItem] = []
             var names: [String] = []
 
@@ -264,7 +300,7 @@ open class iCloud: NSObject {
             }
             
             results.forEach {
-
+                
                 if $0.status == .downloaded {
                     // File will be updated soon
                 } else if $0.status == .current {
@@ -286,10 +322,18 @@ open class iCloud: NSObject {
             }
             
             self.previousQueryResults = results
-            
+
             // Notify delegate about results
             DispatchQueue.main.async { self.delegate?.iCloudFilesDidChange(discoveredFiles, with: names) }
-            
+
+        }
+        
+        DispatchQueue.global(qos: .background).async {
+
+            while self.shouldUpdateFiles {
+                doUpdateFiles()
+            }
+            self.isUpdatingFiles = false
         }
         
     }
@@ -323,9 +367,9 @@ open class iCloud: NSObject {
             return
         }
         
-        guard let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name) else {
+        guard let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name) else {
             NSLog("[iCloud] Cannot create URL for file")
-            completion?(nil, nil, NSError(domain: "Cannot create URL for file. Check iCloud's documentsDirectoryURL.", code: 001, userInfo: nil) as Error)
+            completion?(nil, nil, NSError(domain: "Cannot create URL for file. Check iCloud's cloudDocumentsURL.", code: 001, userInfo: nil) as Error)
             return
         }
         
@@ -390,15 +434,15 @@ open class iCloud: NSObject {
         
         guard
             self.quickCloudCheck,
-            let localDocumentsDirectory: String = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first,
-            let localDocuments: [String] = try? self.fileManager.contentsOfDirectory(atPath: localDocumentsDirectory)
+            let localDocuments: URL = self.localDocumentsURL,
+            let localFiles: [String] = try? self.fileManager.contentsOfDirectory(atPath: localDocuments.path)
             else { return }
         
         DispatchQueue.global(qos: .background).async {
             
-            if self.verboseLogging { NSLog("[iCloud] Files stored locally available for uploading: ", localDocuments) }
+            if self.verboseLogging { NSLog("[iCloud] Files stored locally available for uploading: ", localFiles) }
             
-            for item in localDocuments {
+            for item in localFiles {
                 
                 guard !item.hasPrefix(".") else {
                     DispatchQueue.main.async {
@@ -407,8 +451,8 @@ open class iCloud: NSObject {
                     continue
                 }
                 
-                let cloudURL: URL = self.documentsDirectoryURL!.appendingPathComponent(item)
-                let localURL: URL = URL(fileURLWithPath: localDocumentsDirectory).appendingPathComponent(item)
+                let cloudURL: URL = self.cloudDocumentsURL!.appendingPathComponent(item)
+                let localURL: URL = localDocuments.appendingPathComponent(item)
                 
                 guard (self.previousQueryResults.map{ $0.name }).contains(item) else {
                     if self.verboseLogging { NSLog("[iCloud] Uploading " + item + " to iCloud") }
@@ -530,9 +574,9 @@ open class iCloud: NSObject {
         
         guard
             self.quickCloudCheck,
-            let localDocumentsDirectory: URL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first,
-            let localURL: URL = localDocumentsDirectory.appendingPathComponent(name) as URL?,
-            let cloudURL: URL = self.ubiquityContainer?.appendingPathComponent(name)
+            let localDocuments: URL = self.localDocumentsURL,
+            let localURL: URL = localDocuments.appendingPathComponent(name) as URL?,
+            let cloudURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return }
         
         guard !name.isEmpty else {
@@ -677,7 +721,7 @@ open class iCloud: NSObject {
         
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return nil }
 
         guard !name.isEmpty else {
@@ -734,7 +778,7 @@ open class iCloud: NSObject {
         
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return }
         
         guard !name.isEmpty else {
@@ -793,9 +837,9 @@ open class iCloud: NSObject {
 
         guard
             self.quickCloudCheck,
-            let localDocumentsDirectory: URL = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first,
-            let localURL: URL = localDocumentsDirectory.appendingPathComponent(name) as URL?,
-            let cloudURL: URL = self.ubiquityContainer?.appendingPathComponent(name)
+            let localDocuments: URL = self.localDocumentsURL,
+            let localURL: URL = localDocuments.appendingPathComponent(name) as URL?,
+            let cloudURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return }
 
         guard !name.isEmpty else {
@@ -932,7 +976,7 @@ open class iCloud: NSObject {
 
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return }
 
         guard !name.isEmpty else {
@@ -1040,7 +1084,7 @@ open class iCloud: NSObject {
         
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return nil }
         
         guard !name.isEmpty else {
@@ -1071,12 +1115,32 @@ open class iCloud: NSObject {
         guard
             self.quickCloudCheck,
             !name.isEmpty,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return false }
         
-        return self.fileManager.fileExists(atPath: fileURL.path) ? true : ( self.fileManager.isUbiquitousItem(at: fileURL) )
+        return self.fileManager.fileExists(atPath: fileURL.path)
     }
 
+    /**
+     Returns a Boolean indicating whether the item is targeted for storage in iCloud.
+     
+     This method reflects only whether the item should be stored in iCloud because a call was made to the setUbiquitous(_:itemAt:destinationURL:) method with a value of true for its flag parameter. This method does not reflect whether the file has actually been uploaded to any iCloud servers. To determine a file’s upload status, check the NSURLUbiquitousItemIsUploadedKey attribute of the corresponding NSURL object.
+     
+     - Parameter name: Specify the name for the file or directory whose status you want to check.
+     
+     - Returns: true if the item is targeted for iCloud storage or false if it is not. This method also returns false if no item exists at url or iCloud is not available.
+     */
+    open func isUbiquitousItem(_ name: String) -> Bool {
+        // Check for iCloud
+        guard
+            self.quickCloudCheck,
+            !name.isEmpty,
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
+            else { return false }
+        
+        return self.fileManager.isUbiquitousItem(at: fileURL)
+    }
+    
     /**
      Get the size of a file stored in iCloud
      
@@ -1090,7 +1154,7 @@ open class iCloud: NSObject {
         guard
             self.quickCloudCheck,
             !name.isEmpty,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return nil }
 
         // Check if file exists, and return it's size
@@ -1119,7 +1183,7 @@ open class iCloud: NSObject {
         guard
             self.quickCloudCheck,
             !name.isEmpty,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return nil }
         
         // Check if file exists, and return it's modification date
@@ -1148,7 +1212,7 @@ open class iCloud: NSObject {
         guard
             self.quickCloudCheck,
             !name.isEmpty,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return nil }
         
         // Check if file exists, and return it's creation date
@@ -1176,7 +1240,7 @@ open class iCloud: NSObject {
             
             guard
                 self.quickCloudCheck,
-                let documentURL: URL = self.documentsDirectoryURL,
+                let documentURL: URL = self.cloudDocumentsURL,
                 let documentDirectoryContents: [URL] = try? self.fileManager.contentsOfDirectory(at: documentURL, includingPropertiesForKeys: nil, options: [])
                 else { return nil }
 
@@ -1203,8 +1267,8 @@ open class iCloud: NSObject {
         // Check for iCloud
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name),
-            let newFileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(newName)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name),
+            let newFileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(newName)
             else { return }
 
         guard !name.isEmpty else {
@@ -1285,8 +1349,8 @@ open class iCloud: NSObject {
         // Check for iCloud
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name),
-            let newFileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(newName)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name),
+            let newFileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(newName)
             else { return }
         
         guard !name.isEmpty else {
@@ -1340,7 +1404,7 @@ open class iCloud: NSObject {
         
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return }
         
         guard !name.isEmpty else {
@@ -1355,11 +1419,10 @@ open class iCloud: NSObject {
             let state: UIDocument.State = document.documentState
             let description: String = document.stateDescription
             completion(state, description, nil)
-        } else { // The document didn't exist
-            
+        } else { // The document didn't exist            
             NSLog("[iCloud] File not found: " + name)
             
-            completion(nil, nil, NSError(domain: "The document, " + name + ", does not exist at path: " + self.documentsDirectoryURL!.path, code: 404, userInfo: ["fileURL": fileURL]) as Error)
+            completion(nil, nil, NSError(domain: "The document, " + name + ", does not exist at path: " + self.cloudDocumentsURL!.path, code: 404, userInfo: ["fileURL": fileURL]) as Error)
         }
     }
 
@@ -1382,7 +1445,7 @@ open class iCloud: NSObject {
         // Check for iCloud
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return false }
         
         guard !name.isEmpty else {
@@ -1425,7 +1488,7 @@ open class iCloud: NSObject {
         // Check for iCloud
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return false }
         
         guard !name.isEmpty else {
@@ -1500,7 +1563,7 @@ open class iCloud: NSObject {
         // Check for iCloud
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return nil }
         
         guard !name.isEmpty else {
@@ -1551,7 +1614,7 @@ open class iCloud: NSObject {
         // Check for iCloud
         guard
             self.quickCloudCheck,
-            let fileURL: URL = self.documentsDirectoryURL?.appendingPathComponent(name)
+            let fileURL: URL = self.cloudDocumentsURL?.appendingPathComponent(name)
             else { return }
 
         guard !name.isEmpty else {
