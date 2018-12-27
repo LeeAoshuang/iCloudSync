@@ -9,34 +9,22 @@ I also rewrote the sample app. Despite of icons, it's pretty much same that orig
 I don't do storyboards, so it's entirely in code.
 
 Add this to your Podfile to install.
-    pod 'iCloudSync'
+    pod 'iCloudDocumentSync', :git => 'https://github.com/oskarirauta/iCloudSync.git'
 
-# iCloudSync biggest changes from iCloudDocumentSync
-
- - name (iCloudDocumentSync -> iCloudSync)
- - some other method namings, mostly I have tried to make things shorter
- - legacy iOS support is missing. I created something new- even though it's based on something older- I decided to use newest ways to do things.
-
-# iCloudSync issues
-
-Seems to be hogging memory quite a bit. If someone has solutions, they are welcome. I am interested in all other improvements as well, but don't just throw some ideas; write some code too and make a PR.
-
-# iCloudDocumentSync
+# Description
 
 iCloud Document Sync makes it easy for developers to integrate the iCloud document storage APIs into iOS applications. This is how iCloud document-storage and management should've been out of the box from Apple. Integrate iCloud into iOS (OS X coming soon) Objective-C document projects with one-line code methods. Sync, upload, manage, and remove documents to and from iCloud with only  a few lines of code (compared to the hundreds of lines and hours that it usually takes). Get iCloud up and running in your iOS app in only a few minutes.
 
 If you like the project, please [star it](https://github.com/iRareMedia/iCloudDocumentSync) on GitHub! Watch the project on GitHub for updates. If you use iCloud Document Sync in your app, send an email to contact[at]iraremedia.com or let us know on Twitter @iRareMedia.
 
 # Project Features
-iCloud Document Sync is a great way to use iCloud document storage in your iOS app. Below are a few key project features and highlights.
+iCloudSync is a great way to use iCloud document storage in your iOS app. Below are a few key project features and highlights.
 * Sync, Upload, Read, Write, Share, Save, Remove, and Edit any iCloud document in only one line of code.  
-* Just drag and drop the iCloud Framework (`iCloud.framework`) into your project and you can begin using iCloud - no complicated setup  
+* Just drag and drop the iCloudSync Framework (`iCloudSync.framework`) into your project and you can begin using iCloud - no complicated setup  
 * Access in-depth documentation with docsets, code comments, and verbose logging  
 * Useful delegate methods and properties let you access and manage advanced iCloud features
-* Manage any kind of file with iCloud through use of NSData  
-* iOS Sample-app to illustrate how easy it is to use iCloud Document Sync
-* Frequent updates to the project based on user issues and requests  
-* Easily contribute to the project
+* Manage any kind of file with iCloud through use of Data  
+* iOS Sample-app to illustrate how easy it is to use iCloudSync
 
 ## Table of Contents
 
@@ -59,125 +47,107 @@ iCloud Document Sync is a great way to use iCloud document storage in your iOS a
 Learn more about the project requirements, licensing, and contributions.
 
 ## Requirements
-Requires Xcode 5.0.1+ for use in any iOS Project. Requires a minimum of iOS 6.0 as the deployment target. 
-
-| Current Build Target 	| Earliest Supported Build Target 	| Earliest Compatible Build Target 	|
-|:--------------------:	|:-------------------------------:	|:--------------------------------:	|
-|       iOS 8.1        	|            iOS 7.0              	|             iOS 6.0              	|
-|     Xcode 6.1.1      	|          Xcode 5.1.1            	|           Xcode 5.0.1            	|
-|      LLVM 6.0        	|             LLVM 5.0            	|             LLVM 5.0             	|
-
-> REQUIREMENTS NOTE  
-*Supported* means that the library has been tested with this version. *Compatible* means that the library should work on this OS version (i.e. it doesn't rely on any unavailable SDK features) but is no longer being tested for compatibility and may require tweaking or bug fixes to run correctly.
+Lowest minimum requirements are untested, but framework is designed with Xcode 10.1 and iOS 11.4 is set as a minimum deployment target, code should run on lower targets as well, but is not tested.
 
 ## License 
-This project is licensed under the MIT License. See the [full iCloud Document Sync license here](https://github.com/iRareMedia/iCloudDocumentSync/blob/master/LICENSE.md).
+This project is licensed under MIT License accordingly to it's successor, iCloud Document Sync. See the [full license here](https://github.com/oskarirauta/iCloudSync/block/master/LICENSE.md).
 
-Attribution is not required, but it appreciated. We have spent a lot of time, energy, and resources working on this project - so a little *Thanks!* (or something to that affect) would be much appreciated. If you use iCloud Document Sync in your app, send an email to contact@iraremedia.com or let us know on Twitter @iRareMedia.
+Attribution is not required, but it's appreciated. iRare Media and I have spend a lot of time, energy and resource on this proejct, so a little *Thanks!* would be great. If you use iCloudSync or iCloud Document Sync in your app, send email to contract@iraremedia.com or send a tweet at @iRareMedia.
 
 ## Contributions
-Any contribution is more than welcome! You can contribute through pull requests and issues on GitHub. Learn more [about contributing to the project here](https://github.com/iRareMedia/iCloudDocumentSync/blob/master/CONTRIBUTING.md).
+Any contribution is more than welcome! You can contribute through pull requests and issues on GitHub.
 
 ## Sample App
-The iOS Sample App included with this project demonstrates how to use many of the features in iCloud Document Sync. You can refer to the sample app for an understanding of how to use and setup iCloud Document Sync. The app should work with iCloud as-is (you may need to provide your own Bundle ID though).
-
-<img width=700 src="https://raw.github.com/iRareMedia/iCloudDocumentSync/master/iCloud%20App%20-%20iOS/AppBanner.png"/>
+The iOS Sample App included with this project demonstrates how to use many of the features in iCloudSync. You can refer to the sample app for an understanding of how to use and setup iCloudSync. The app should work with iCloud as-is (you may need to provide your own Bundle ID though).
 
 # Installation
-Adding iCloud Document Sync to your project is easy. There are multiple ways to add iCloud Document Sync to your project. Choose the process below which best suits your needs. Follow the steps to get everything up and running in only a few minutes.
+There are multiple ways to add iCloudSync to your project and it is easy. Choose the process below which best suits your needs. Follow the steps to get everything up and running in no time.
 
 ### CocoaPods Setup
 The easiest way to install iCloud Document Sync is to use CocoaPods. To do so, simply add the following line to your Podfile:
 
-    pod 'iCloudDocumentSync'
+    pod 'iCloudDocumentSync', :git => 'https://github.com/oskarirauta/iCloudSync.git'
 
 ### Framework Setup
-The iCloud.framework can be retrieved in two different ways:  
- 1. Clone the project to your computer and build the *Framework* target. The `iCloud.framework` file will be copied to the project directory. Drag and drop the `.framework` file into your project.  
- 2. Download your preferred iCloud Document Sync Framework release from the [Project Releases](https://github.com/iRareMedia/iCloudDocumentSync/releases) section. Frameworks are available as far back as version 7.0. Unzip then drag and drop the `.framework` file into your project.   
+Clone the project to your computer and build the *Framework* target. The `iCloudSync.framework` file will be copied to the project directory. Drag and drop the `.framework` file into your project.  
 
 ### Traditional Setup
-Drag and drop the *iCloud* folder into your Xcode project. When you do so, check the "Copy items into destination group's folder" box. Delete the `iCloud-Prefix.pch` file. 
-
-### Swift Project Setup
-To use iCloud Document Sync in a Swift project, you must create a [bridging header](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/BuildingCocoaApps/MixandMatch.html). 
-
-If you already have a bridging header, simply import `iCloud.h` (use the `#import <iCloud/iCloud.h>` syntax when importing the framework, otherwise use `#import "iCloud.h"`). 
-
-If you do not already have a bridging header, install iCloud Document Sync into your project using any of the above processes. When adding the files to Xcode, you will be prompted to create a bridging header - create one. Then, import iCloud Document Sync (see paragraph above).
+Drag and drop the *iCloudSync* folder into your Xcode project. When you do so, check the "Copy items into destination group's folder" box.
 
 # Setup
-After installing iCloud Document Sync, it only takes a few lines of code to get it up an running.  
-  1. Import iCloud (see relevant install instructions above) to your header file(s).  
-  2. Subscribe to the `<iCloudDelegate>` delegate.  
+After installing iCloudSync, it only takes a few lines of code to get it up an running.  
+  1. Import iCloudSync (see relevant install instructions above) to your header file(s).  
+  2. Subscribe to the `iCloudDelegate` delegate.  
   3. Set the delegate and optionally enable verbose logging:  
    
-        [[iCloud sharedCloud] setDelegate:self]; // Set this if you plan to use the delegate
-        [[iCloud sharedCloud] setVerboseLogging:YES]; // We want detailed feedback about what's going on with iCloud, this is OFF by default
+        iCloud.shared.delegate = self // Set this if you plan to use the delegate
+        iCloud.shared.verboseLogging = true // We want detailed feedback about what's going on with iCloud, this is OFF by default
   4. Setup iCloud when your app starts. It is crucial that you call this method before doing any document handling operations. You can either pass a specific Ubiquity Container ID (see your entitlements file) or `nil` to use the first Ubiquity Container ID in your entitlements.  
 
-        [[iCloud sharedCloud] setupiCloudDocumentSyncWithUbiquityContainer:nil];   
-  5. It is recommended that the first call to `iCloud` is `setDelegate`, this way all subsequent operations and method calls can interact with the delegate and provide appropriate information.
+        iCloud.shared.setupiCloud(nil)   
+  5. It is recommended that the first call to `iCloud` after setup, is setting delegate. This way all subsequent operations and method calls can interact with the delegate and provide appropriate information.
 
 # Documentation
-Key methods, properties, types, and delegate methods available on the iCloud class are documented below. If you're using [Xcode 5](https://developer.apple.com/technologies/tools/whats-new.html) with iCloud Document Sync, documentation is available directly within Xcode (just Option-Click any method for Quick Help). For more advanced documentation please install the docset included with this project. This will allow you to view iCloud Document Sync documentation inside of Xcode's Organizer Window. Additional documentation can also be found on the Wiki page (including how to register your app for iCloud, iCloud fundamentals, etc.).   
+Key methods, properties, types, and delegate methods available on the iCloud class are documented below. If you're using [Xcode 5](https://developer.apple.com/technologies/tools/whats-new.html) with iCloudSync, documentation is available directly within Xcode (just Option-Click any method for Quick Help). Additional documentation can also be found on the Wiki page (including how to register your app for iCloud, iCloud fundamentals, etc.).   
 
 ## Methods
-There are many methods available on iCloud Document Sync. The most important / highlight methods are documented below. All other methods are documented in the docset and with in-code comments.
+There are many methods available on iCloudSync. The most important / highlight methods are documented below. All other methods are documented with in-code comments.
 
 ### Checking for iCloud Availability
-iCloud Document Sync checks for iCloud availability before performing any iCloud-related operations. Any iCloud Document Sync methods may return prematurely and without warning if iCloud is unavailable. Therefore, you should always check if iCloud is available before performing any iCloud operations.
+iCloudSync checks for iCloud availability before performing any iCloud-related operations. Any method may return prematurely and without a warning if iCloud is unavailable. Therefore, you should always check if iCloud is available before performing any iCloud operations.
 
-    BOOL cloudIsAvailable = [[iCloud sharedCloud] checkCloudAvailability];
-    if (cloudIsAvailable) {
-        //YES
+    let cloudIsAvailable: Bool = iCloud.shared.cloudAvailable
+    if cloudIsAvailable {
+        // true
     }
 
-This checks if iCloud is available by looking for the application's ubiquity token. It returns a boolean value; YES if iCloud is available, and NO if it is not. Check the log / documentation for details on why it may not be available. You can also check for the availability of the iCloud ubiquity *container* by calling the following method:
+This checks if iCloud is available by looking for the application's ubiquity token. It returns a boolean value; true if iCloud is available, and false if not. Check the log / documentation for details on why it may not be available. You can also check for the availability of the iCloud ubiquity *container* by calling the following method:
 
-    BOOL cloudContainerIsAvailable = [[iCloud sharedCloud] checkCloudUbiquityContainer];
+    let cloudContainerIsAvailable: Bool = iCloud.shared.ubiquityContainerAvailable
 
-The `checkCloudAvailability` method will call the `iCloudAvailabilityDidChangeToState: withUbiquityToken: withUbiquityContainer:` delegate method. 
+The `cloudAvailable` getter will call the `iCloudAvailabilityDidChange(to isAvailable: Bool, token ubiquityToken: UbiquityIdentityToken?, with ubiquityContainer: URL?)` delegate method. 
 
 ### Syncing Documents
-To get iCloud Document Sync to initialize for the first time, and continue to update when there are changes you'll need to initialize iCloud. By initializing iCloud, it will start syncing with iCloud for the first time and in the future.  
+To get iCloudSync to initialize for the first time, and continue to update when there are changes you'll need to initialize iCloud. By initializing iCloud, it will start syncing with iCloud for the first time and in the future.  
 
-    [[iCloud sharedCloud] init];
+    let _ = iCloud.shared
 
 You can manually fetch changes from iCloud too:
 
-    [[iCloud sharedCloud] updateFiles];
+    iCloud.shared.updateFiles()
 
-iCloud Document Sync will automatically detect changes in iCloud documents. When something changes the delegate method below is fired and will pass an NSMutableArray of all the files (NSMetadata Items) and their names (NSStrings) stored in iCloud.
+iCloudSync will automatically detect changes in iCloud documents. When something changes the delegate method below is fired and will pass an array of all the files (NSMetadata Items) and their names (NSStrings) stored in iCloud.
 
-    - (void)iCloudFilesDidChange:(NSMutableArray *)files withNewFileNames:(NSMutableArray *)fileNames
+    - iCloudFilesDidChange(_ files: [NSMetadataItem], with filenames: [String])
 
 ### Uploading Documents
-iCloud Document Sync uses UIDocument and NSData to store and manage files. All of the heavy lifting with NSData and UIDocument is handled for you. There's no need to actually create or manage any files, just give iCloud Document Sync your data, and the rest is done for you.
+iCloudSync uses UIDocument and Data to store and manage files. All of the heavy lifting with Data and UIDocument is handled for you. There's no need to actually create or manage any files, just give iCloudSync your data, and the rest is done for you.
 
 To create a new document or save and close an existing one, use the method below.
 
-    [[iCloud sharedCloud] saveAndCloseDocumentWithName:@"Name.ext" withContent:[NSData data] completion:^(UIDocument *cloudDocument, NSData *documentData, NSError *error) {
-        if (error == nil) {
-            // Code here to use the UIDocument or NSData objects which have been passed with the completion handler
+    iCloud.shared.saveAndCloseDocument("Name.ext", with: *content as data*, completion: {
+        document, data, error
+        if error == nil {
+            // Code here to use the UIDocument or Data objects which have been passed with the completion handler
         }
-    }];
+    })
 
-The completion handler will be called when a document is saved or created. The completion handler has a UIDocument and NSData parameter that contain the document and it's contents. The third parameter is an NSError that will contain an error if one occurs, otherwise it will be `nil`.
+The completion handler will be called when a document is saved or created. The completion handler has a UIDocument and Data parameter that contain the document and it's contents. The third parameter is an Error that will contain an error if one occurs, otherwise it will be `nil`.
 
 You can also upload any documents created while offline, or locally.  Files in the local documents directory that do not already exist in iCloud will be **moved** into iCloud one by one. This process involves lots of file manipulation and as a result it may take a long time. This process will be performed on the background thread to avoid any lag or memory problems. When the upload processes end, the completion block is called on the main thread.
 
-    [[iCloud sharedCloud] uploadLocalOfflineDocumentsWithRepeatingHandler:^(NSString *fileName, NSError *error) {
-        if (error == nil) {
+    iCloud.shared.uploadLocalOfflineDocuments(repeatingHandler: {
+        name, error in
+        if error == nil {
             // This code block is called repeatedly until all files have been uploaded (or an upload has at least been attempted). Code here to use the NSString (the name of the uploaded file) which have been passed with the repeating handler
-        }
-    } completion:^{
+        }        
+    }, completion: {
         // Completion handler could be used to tell the user that the upload has completed
-    }];
+    })
 
-Note the `repeatingHandler` block. This block is called every-time a local file is uploaded, therefore it may be called multiple times in a short period. The NSError object contains any error information if an error occurred, otherwise it will be nil.
+Note the `repeatingHandler` block. This block is called every-time a local file is uploaded, therefore it may be called multiple times in a short period. The Error object contains any error information if an error occurred, otherwise it will be nil.
 
-### Removing Documents
+### Removing Documents // Documentation updating until this part
 You can delete documents from iCloud by using the method below. The completion block is called when the file is successfully deleted.
 
     [[iCloud sharedCloud] deleteDocumentWithName:@"docName.ext" completion:^(NSError *error) {
