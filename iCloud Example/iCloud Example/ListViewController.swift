@@ -149,10 +149,12 @@ class ListViewController: UITableViewController, iCloudDelegate {
             if error != nil {
                 NSLog("Error deleting document: " + error!.localizedDescription)
             } else {
-                iCloud.shared.updateFiles()
                 self.fileObjectList.remove(at: indexPath.row)
                 self.fileNameList.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
+                tableView.deleteRows(at: [indexPath], with: .top)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
+                    iCloud.shared.updateFiles()
+                })
             }
         })
     }
@@ -215,6 +217,14 @@ class ListViewController: UITableViewController, iCloudDelegate {
 
     func iCloudFilesDidChange(_ files: [NSMetadataItem], with filenames: [String]) {
         // Get the query results
+        
+        guard filenames != self.fileNameList, files != self.fileObjectList else {
+            if self.refreshControl?.isRefreshing ?? false {
+                self.refreshControl?.endRefreshing()
+            }
+            return
+        }
+        
         if !filenames.isEmpty {
             NSLog("Files: " + filenames.joined(separator: ","))
         }
@@ -225,10 +235,10 @@ class ListViewController: UITableViewController, iCloudDelegate {
         if self.refreshControl?.isRefreshing ?? false {
             self.refreshControl?.endRefreshing()
         }
-        if self.tableView.contentOffset == CGPoint.zero {
-            self.tableView.contentOffset = CGPoint(x: 0, y: 1)
+        if self.tableView.contentOffset.y == -self.tableView.adjustedContentInset.top {
+            self.tableView.contentOffset = CGPoint(x: 0, y: self.tableView.contentOffset.y + 1.0)
         }
-        self.tableView.setContentOffset(CGPoint.zero, animated: true)
+        self.tableView.setContentOffset(CGPoint(x: 0, y:-self.tableView.adjustedContentInset.top), animated: true)
         self.tableView.reloadData()
     }
 
