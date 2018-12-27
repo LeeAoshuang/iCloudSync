@@ -2,21 +2,14 @@
 
 # iCloudSync
 
-This is a fork of iRareMedia's iCloudDocumentSync. A complete rewrite in Swift, including some fixes.
-Documentation is out-of-date, due to some renamings and changes that I have made, but it's pretty straight forward.
-
-I also rewrote the sample app. Despite of icons, it's pretty much same that original was.
-I don't do storyboards, so it's entirely in code.
-
-Add this to your Podfile to install.
-
-    pod 'iCloudDocumentSync', :git => 'https://github.com/oskarirauta/iCloudSync.git'
+This is a fork from iRareMedia's iCloudDocumentSync. A complete rewrite in Swift, including some fixes.
+Documentation is still partially out-of-date, but it's pretty straight forward if you ever have used iCloud Document Sync.
 
 # Description
 
-iCloud Document Sync makes it easy for developers to integrate the iCloud document storage APIs into iOS applications. This is how iCloud document-storage and management should've been out of the box from Apple. Integrate iCloud into iOS (OS X coming soon) Objective-C document projects with one-line code methods. Sync, upload, manage, and remove documents to and from iCloud with only  a few lines of code (compared to the hundreds of lines and hours that it usually takes). Get iCloud up and running in your iOS app in only a few minutes.
+iCloudSync makes it easy for developers to integrate the iCloud document storage APIs into iOS applications. This is how iCloud document-storage and management should've been out of the box from Apple. Integrate iCloud into iOS Swift document projects with one-line code methods. Sync, upload, manage, and remove documents to and from iCloud with only a few lines of code. Get iCloud up and running in your iOS app in no time.
 
-If you like the project, please [star it](https://github.com/iRareMedia/iCloudDocumentSync) on GitHub! Watch the project on GitHub for updates. If you use iCloud Document Sync in your app, send an email to contact[at]iraremedia.com or let us know on Twitter @iRareMedia.
+If you like the project, please [star it](https://github.com/oskarirauta/iCloudSync) on GitHub!
 
 # Project Features
 iCloudSync is a great way to use iCloud document storage in your iOS app. Below are a few key project features and highlights.
