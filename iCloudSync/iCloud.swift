@@ -1465,6 +1465,8 @@ open class iCloud: NSObject {
         
         // Log monitoring success
         if self.verboseLogging { NSLog("[iCloud] Observing for changes to iCloud availability") }
+
+        perform(selector, with: Notification(name: NSNotification.Name.NSUbiquityIdentityDidChange, object: self.cloudAvailable, userInfo: nil))
     }
 
     /**

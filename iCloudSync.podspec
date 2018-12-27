@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'iCloudSync'
-  s.version          = '8.0.3'
+  s.version          = '8.0.4'
   s.license          = { :type => 'MIT'  }
   s.summary          = 'Sync and Manage iCloud Documents in your iOS app. Simplifies iCloud Document Syncing. Makes iCloud just work for developers too.'
  
@@ -8,7 +8,7 @@ Pod::Spec.new do |s|
 iCloudSync is a fork of iCloudDocumentSync Framework by iRare Media. Original
 framework was done under MIT license, so this one follows MIT licensing.
 
-iCloudSync makes it credibly simple to integrate iCloud document storage
+iCloudSync makes it incredibly simple to integrate iCloud document storage
 APIs into iOS applications. This is how iCloud document-storage and 
 management should've been out of the box from Apple. Integrate iCloud
 into iOS Swift document projects with one-line code methods.
