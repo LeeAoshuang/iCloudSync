@@ -1372,6 +1372,7 @@ open class iCloud: NSObject {
 
      - Returns: true if observing was succesfully setup, otherwise false.
      */
+    
     @discardableResult
     open func observeDocumentState(_ name: String, observer: Any, selector: Selector) -> Bool {
         
@@ -1414,6 +1415,7 @@ open class iCloud: NSObject {
      
      - Returns: true if observing was succesfully ended, otherwise false.
      */
+    
     @discardableResult
     open func removeDocumentStateObserver(_ name: String, observer: Any) -> Bool {
         
@@ -1446,6 +1448,39 @@ open class iCloud: NSObject {
         // Log monitoring success
         if self.verboseLogging { NSLog("[iCloud] Stopped observing for changes to " + name) }
         return true
+    }
+
+    /**
+     Observe changes in the state of iCloud availability
+     
+     - Parameter observer: Object registering as an observer. This value must not be nil.
+     - Parameter selector: Selector to be called when state changes. Must only have one argument, an instance of NSNotifcation whose object is an bool. This value must not be nil.
+     
+     - Returns: nothing.
+     */
+
+    open func observeCloudState(_ observer: Any, selector: Selector) {
+
+        self.notificationCenter.addObserver(observer, selector: selector, name: NSNotification.Name.NSUbiquityIdentityDidChange, object: self.cloudAvailable)
+        
+        // Log monitoring success
+        if self.verboseLogging { NSLog("[iCloud] Observing for changes to iCloud availability") }
+    }
+
+    /**
+     Stop observing changes to state of iCloud availability
+     
+     - Parameter observer: Object registered as an observer. This value must not be nil.
+     
+     - Returns: nothing.
+     */
+
+    open func removeCloudStateObserver(observer: Any) {
+        
+        self.notificationCenter.removeObserver(observer, name: NSNotification.Name.NSUbiquityIdentityDidChange, object: self.cloudAvailable)
+
+        // Log monitoring success
+        if self.verboseLogging { NSLog("[iCloud] Stopped observing for changes to iCloud availability") }
     }
     
     /* Resolving iCloud Conflicts */
