@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name             = 'iCloudSync'
   s.version          = '8.0.7'
   s.license          = { :type => 'MIT'  }
-  s.summary          = 'Sync and Manage iCloud Documents in your iOS app. Simplifies iCloud Document Syncing. Makes iCloud just work for developers too. A fork, complete rewrite, of iCloud Document Sync.'
+  s.summary          = 'Sync and Manage iCloud Documents. A fork, complete rewrite, of iCloud Document Sync written in pure Swift.'
  
   s.description      = <<-DESC
 iCloudSync is a fork of iCloud Document Sync Framework by iRare Media. Original
