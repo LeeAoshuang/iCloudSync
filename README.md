@@ -72,12 +72,12 @@ After installing iCloudSync, it only takes a few lines of code to get it up an r
   2. Subscribe to the `iCloudDelegate` delegate.  
   3. Set the delegate and optionally enable verbose logging:  
    
-        iCloud.shared.delegate = self // Set this if you plan to use the delegate
-        iCloud.shared.verboseLogging = true // We want detailed feedback on what's going on with iCloud, false by default
+    iCloud.shared.delegate = self // Set this if you plan to use the delegate
+    iCloud.shared.verboseLogging = true // We want detailed feedback on what's going on with iCloud, false by default
         
   4. Setup iCloud when your app starts. It is crucial that you call this method before doing any document handling operations. You can either pass a specific Ubiquity Container ID (see your entitlements file) or `nil` to use the first Ubiquity Container ID in your entitlements.  
 
-        iCloud.shared.setupiCloud(nil)
+    iCloud.shared.setupiCloud(nil)
         
   5. It is recommended that the first call to `iCloud` after setup, is setting delegate. This way all subsequent operations and method calls can interact with the delegate and provide appropriate information.
 
