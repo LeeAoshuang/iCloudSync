@@ -1,4 +1,4 @@
-![Banner](https://raw.githubusercontent.com/iRareMedia/iCloudDocumentSync/master/iCloud%20App%20-%20iOS/CloudBanner.png)
+![Banner](https://github.com/oskarirauta/iCloudSync/raw/master/Documentation/CloudBanner.png)
 
 # iCloudSync
 
@@ -29,7 +29,6 @@ iCloudSync is a great way to use iCloud document storage in your iOS app. Below 
   * [CocoaPods](#cocoapods-setup)
   * [Framework](#frameworks-setup)
   * [Traditional](#traditional-setup)
-  * [Swift Projects](#swift-projects-setup)
 * [**Setup**](#setup)
 * [**Documentation**]
   * [Methods](#methods)
