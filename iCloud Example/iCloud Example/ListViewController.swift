@@ -38,8 +38,8 @@ class ListViewController: UITableViewController, iCloudDelegate {
         // Setup iCloud
         iCloud.shared.verboseLogging = true // Enable detailed feedback
         iCloud.shared.setupiCloud() // This method must be called before performing any document operations
-        iCloud.shared.delegate = self // Set this if youu plan to use the delegate
-
+        iCloud.shared.delegate = self // Set this if you plan to use the delegate
+        
         self.tableView = UITableView(frame: .zero, style: .grouped)
         self.tableView.register(FileCell.self, forCellReuseIdentifier: "fileCell")
         self.tableView.dataSource = self

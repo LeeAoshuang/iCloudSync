@@ -8,12 +8,6 @@ Pod::Spec.new do |s|
 iCloudSync is a fork of iCloudDocumentSync Framework by iRare Media. Original
 framework was done under MIT license, so this one follows MIT licensing.
 
-What is different in iCloudSync and iCloudDocumentSync?
-Well, mostly that iCloudSync is a complete rewrite, and original version was
-written in Objective-C, when this is written in pure Swift.
-Some things are different, but I have tried to keep up with original
-functionality.
-
 iCloudSync makes it credibly simple to integrate iCloud document storage
 APIs into iOS applications. This is how iCloud document-storage and 
 management should've been out of the box from Apple. Integrate iCloud
