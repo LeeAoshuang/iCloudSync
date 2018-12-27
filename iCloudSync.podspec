@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'iCloudSync'
-  s.version          = '8.0.4'
+  s.version          = '8.0.5'
   s.license          = { :type => 'MIT'  }
   s.summary          = 'Sync and Manage iCloud Documents in your iOS app. Simplifies iCloud Document Syncing. Makes iCloud just work for developers too.'
  
