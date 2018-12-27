@@ -141,33 +141,38 @@ You can also upload any documents created while offline, or locally.  Files in t
 
 Note the `repeatingHandler` block. This block is called every-time a local file is uploaded, therefore it may be called multiple times in a short period. The Error object contains any error information if an error occurred, otherwise it will be nil.
 
-### Removing Documents // Documentation updating until this part
+### Removing Documents
 You can delete documents from iCloud by using the method below. The completion block is called when the file is successfully deleted.
 
-    [[iCloud sharedCloud] deleteDocumentWithName:@"docName.ext" completion:^(NSError *error) {
+    iCloud.shared.deleteDocument("docName.ext", completion: {
+        error in
         // Completion handler could be used to update your UI and tell the user that the document was deleted
-    }];
+    })
 
 ### Retrieving Documents and Data
-You can open and retrieve a document stored in your iCloud documents directory with the method below. This method will attempt to open the specified document. If the file does not exist, a blank one will be created. The completion handler is called when the file is opened or created (either successfully or not). The completion handler contains a UIDocument, NSData, and NSError all of which contain information about the opened document.
+You can open and retrieve a document stored in your iCloud documents directory with the method below. This method will attempt to open the specified document. If the file does not exist, a blank one will be created. The completion handler is called when the file is opened or created (either successfully or not). The completion handler contains a UIDocument, Data, and Error all of which contain information about the opened document.
 
-    [[iCloud sharedCloud] retrieveCloudDocumentWithName:@"docName.ext" completion:^(UIDocument *cloudDocument, NSData *documentData, NSError *error) {
-    	if (!error) {
-    		NSString *fileName = [cloudDocument.fileURL lastPathComponent];
-    		NSData *fileData = documentData;
+    iCloud.shared.retrieveCloudDocument("docName.ext", completion: {
+        document, data, error in
+        if 
+           (!error),
+           let filename: String = document.fileURL.lastPathComponent,
+           let filedata: Data = data {
+            // You have retrieved document's filename and contents as data, proceed..
+        }
     	}
-    }];
+    })
 
 First check if there was an error retrieving or creating the file, if there wasn't you can proceed to get the file's contents and metadata.
 
 You can also check whether or not a file actually exists in iCloud or not by using the method below.
 
-    BOOL fileExists = [[iCloud sharedCloud] doesFileExistInCloud:@"docName.ext"];
-    if (fileExists == YES) {
-    	// File Exists in iCloud
+    let fileExists: Bool = iCloud.shared.fileExistsInCloud("docName.ext")
+    if fileExists {
+        // File Exists in iCloud
     }
 
-### Sharing Documents
+### Sharing Documents // Documentation updated until this section
 You can upload an iCloud document to a public URL by using the method below. The completion block is called when the public URL is created.
 
     NSURL *publicURL = [[iCloud sharedCloud] shareDocumentWithName:@"docName.ext" completion:^(NSURL *sharedURL, NSDate *expirationDate, NSError *error) {
