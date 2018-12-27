@@ -1,4 +1,4 @@
-![Banner](https://raw.githubusercontent.com/iRareMedia/iCloudDocumentSync/master/iCloud%20App%20-%20iOS/CloudBanner.png)
+![Banner](https://github.com/oskarirauta/iCloudSync/raw/master/Documentation/CloudBanner.png)
 
 # iCloudSync
 
