@@ -821,7 +821,10 @@ open class iCloud: NSObject {
                     // Log success
                     if self.verboseLogging { NSLog("[iCloud] The document has been deleted") }
                     
-                    DispatchQueue.main.async { self.updateFiles() }
+                    DispatchQueue.main.async {
+                        self.updateFiles()
+                        completion?(nil)
+                    }
                 }
             })
         }
