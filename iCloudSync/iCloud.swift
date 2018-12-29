@@ -799,6 +799,10 @@ open class iCloud: NSObject {
             return
         }
         
+        func finish() {
+            completion?(nil)
+        }
+        
         if self.verboseLogging { NSLog("[iCloud] File exists, attempting to delete it") }
 
         // Move to the background thread for safety
@@ -824,8 +828,7 @@ open class iCloud: NSObject {
                     if self.verboseLogging { NSLog("[iCloud] The document has been deleted") }
                     
                     DispatchQueue.main.async {
-                        self.updateFiles()
-                        completion?(nil)
+                        self.updateFiles(with: finish)
                     }
                 }
             })
