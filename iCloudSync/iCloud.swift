@@ -276,11 +276,8 @@ open class iCloud: NSObject {
      Check for and update the list of files stored in your app's iCloud Documents Folder.
      
      This method is automatically called by iOS when there are changes to files in the iCloud Directory. The iCloudFilesDidChange(files: [NSMetadataItem], with filenames: [String]) delegate method is triggered by this method.
-     
-     - Parameter completion: Optional. Executed after file updating has finished.
-     
      */
-    open func updateFiles(with completion: (() -> Void)? = nil) {
+    open func updateFiles() {
 
         self.shouldUpdateFiles = true
         guard !self.isUpdatingFiles else { return }
@@ -337,9 +334,6 @@ open class iCloud: NSObject {
                 doUpdateFiles()
             }
             self.isUpdatingFiles = false
-            if completion != nil {
-                DispatchQueue.main.async { completion?() }
-            }
         }
         
     }
@@ -827,9 +821,7 @@ open class iCloud: NSObject {
                     // Log success
                     if self.verboseLogging { NSLog("[iCloud] The document has been deleted") }
                     
-                    DispatchQueue.main.async {
-                        self.updateFiles(with: finish)
-                    }
+                    DispatchQueue.main.async { self.updateFiles() }
                 }
             })
         }
