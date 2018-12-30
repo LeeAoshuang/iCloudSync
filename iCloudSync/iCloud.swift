@@ -799,35 +799,44 @@ open class iCloud: NSObject {
         
         if self.verboseLogging { NSLog("[iCloud] File exists, attempting to delete it") }
 
-        // Move to the background thread for safety
-        DispatchQueue.global(qos: .background).async {
+        let successfulSecurityScopedResourceAccess = fileURL.startAccessingSecurityScopedResource()
+
+        // Use a file coordinator to safely delete the file
+        let fileCoordinator: NSFileCoordinator = NSFileCoordinator(filePresenter: nil)
+        let writingIntent: NSFileAccessIntent = NSFileAccessIntent.writingIntent(with: fileURL, options: .forDeleting)
+        let backgroundQueue: OperationQueue = OperationQueue()
+        fileCoordinator.coordinate(with: [writingIntent], queue: backgroundQueue, byAccessor: {
+            accessError in
             
-            // Use a file coordinator to safely delete the file
-            let fileCoordinator: NSFileCoordinator = NSFileCoordinator(filePresenter: nil)
-            fileCoordinator.coordinate(writingItemAt: fileURL, options: .forDeleting, error: nil, byAccessor: {
-                url in
-
-                var success: Bool = true
+            if accessError != nil {
+                NSLog("[iCloud] Access error occurred while deleting document: " + accessError!.localizedDescription)
+                completion?(accessError)
+            } else {
                 
+                var success: Bool = true
+                var _error: Error? = nil
+
                 do {
-                    try self.fileManager.removeItem(at: url)
+                    try self.fileManager.removeItem(at: writingIntent.url)
                 } catch {
-                    NSLog("[iCloud] An error occurred while deleting document: " + error.localizedDescription)
-                    DispatchQueue.main.async { completion?(error) }
                     success = false
+                    NSLog("[iCloud] An error occurred while deleting document: " + error.localizedDescription)
+                    _error = error
+                    DispatchQueue.main.async { completion?(error) }
                 }
 
-                if success {
-                    // Log success
-                    if self.verboseLogging { NSLog("[iCloud] The document has been deleted") }
-                    
-                    DispatchQueue.main.async {
-                        self.updateFiles()
-                        completion?(nil)
-                    }
+                if successfulSecurityScopedResourceAccess {
+                    fileURL.stopAccessingSecurityScopedResource()
                 }
-            })
-        }
+
+                DispatchQueue.main.async {
+                    if success {
+                        self.updateFiles()
+                    }
+                    completion?(_error)
+                }
+            }
+        })
     }
 
     /**
