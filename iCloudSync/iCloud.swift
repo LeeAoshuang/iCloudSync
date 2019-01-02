@@ -93,7 +93,7 @@ open class iCloud: NSObject {
      */
     open func setupiCloud(_ containerID: String? = nil) {
 
-        NSLog("[iCloud] Initializing Ubiquity Container")
+        if self.verboseLogging { NSLog("[iCloud] Initializing Ubiquity Container") }
         
         self.ubiquityContainer = self.fileManager.url(forUbiquityContainerIdentifier: containerID)
 
@@ -112,8 +112,9 @@ open class iCloud: NSObject {
         let _ = self.cloudDocumentsURL
         
         DispatchQueue.global().async {
-            
-            NSLog("[iCloud] Initializing Document Enumeration")
+
+            // Log document enumeration
+            if self.verboseLogging { NSLog("[iCloud] Initializing Document Enumeration") }
             self.enumerateCloudDocuments()
             
             self.notificationCenter.addObserver(self, selector: #selector(getter: self.cloudAvailable), name: NSNotification.Name.NSUbiquityIdentityDidChange, object: nil)
@@ -135,7 +136,6 @@ open class iCloud: NSObject {
         
         // Setup iCloud Metadata query and request file extension limitation from delegate
         self.query.searchScopes = [ NSMetadataQueryUbiquitousDocumentsScope ]
-
         
         if
             let _fileExtensions: [String] = self.delegate?.iCloudQueryLimitedToFileExtension,
