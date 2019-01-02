@@ -168,55 +168,62 @@ You can also check whether or not a file actually exists in iCloud or not by usi
         // File Exists in iCloud
     }
 
-### Sharing Documents // Documentation updated until this section
+### Sharing Documents
 You can upload an iCloud document to a public URL by using the method below. The completion block is called when the public URL is created.
 
-    NSURL *publicURL = [[iCloud sharedCloud] shareDocumentWithName:@"docName.ext" completion:^(NSURL *sharedURL, NSDate *expirationDate, NSError *error) {
+    iCloud.shared.shareDocument("docName.ext", completion: {
+        sharedURL, expirationDate, error in
         // Completion handler that passes the public URL created, the expiration date of the URL, and any errors. Could be used to update your UI and tell the user that the document was uploaded
-    }];
+    })
 
 ### Renaming and Duplicating Documents
 Rename a document stored in iCloud
 
-    [[iCloud sharedCloud] renameOriginalDocument:@"oldName.ext" withNewName:@"newName.ext" completion:^(NSError *error) {
+    iCloud.shared.renameDocument("oldName.ext", with: "newName.ext", completion: {
+        error in
         // Called when renaming is complete
-    }];
+    })
 
-Duplicating a document stored in iCloud
+### Duplicating a document stored in iCloud
+Duplicate a document stored in iCloud
 
-    [[iCloud sharedCloud] duplicateOriginalDocument:@"docName.ext" withNewName:@"docName copy.ext" completion:^(NSError *error) {
+    iCloud.shared.duplicateDocument("docName.ext", with: "docNameCopy.ext", completion: {
+        error in
         // Called when duplication is complete
-    }];
+    })
 
-### Monitoring Document State
+### Observing Document State
 iCloud tracks the state of a document when stored in iCloud. Document states include: Normal / Open, Closed, In Conflict, Saving Error, and Editing Disabled (learn more about [UIDocumentState](https://developer.apple.com/library/ios/documentation/uikit/reference/UIDocument_Class/UIDocument/UIDocument.html#//apple_ref/doc/c_ref/UIDocumentState)). Get the current document state of a file stored in iCloud with this method:
 
-    [[iCloud sharedCloud] documentStateForFile:@"oldName.ext" completion:^(UIDocumentState *documentState, NSString *userReadableDocumentState, NSError *error) {
+    iCloud.shared.documentState("docName.ext", completion: {
+        state, description, error in
         // Completion handler that passes two parameters, an NSError and a UIDocumentState. The documentState parameter represents the document state that the specified file is currently in (may be nil if the file does not exist). The NSError parameter will contain a 404 error if the file does not exist.
-    }];
+    })
 
-Monitor changes in a document's state by subscribing a specific target / selector / method.
+Observe changes in a document's state by subscribing a specific target / selector / method.
 
-    BOOL success = [[iCloud sharedCloud] monitorDocumentStateForFile:@"docName.ext" onTarget:self withSelector:@selector(methodName:)];
+    let success: Bool = iCloud.shared.observeDocumentState("docName.ext", observer: self, selector: #selector(self.methodName(_:)))
 
-Stop monitoring changes in a document's state by removing notifications for a specific target.
+Stop observing changes in a document's state by removing notifications for a specific target.
 
-    BOOL success = [[iCloud sharedCloud] stopMonitoringDocumentStateChangesForFile:@"docName.ext" onTarget:self];
+    let success: Bool = iCloud.shared.removeDocumentStateObserver("docName.ext", observer: self)
     
 ### File Conflict Handling
-When a document's state changes to *in conflict*, your application should take the appropriate action by resolving the conflict or letting the user resolve the conflict. You can monitor for document state changes with the `monitorDocumentStateForFile:onTarget:withSelector:` method. iCloud Document Sync provides two methods that help handle a conflict with a document stored in iCloud. The first method lets you find all conflicting versions of a file:
+When a document's state changes to *in conflict*, your application should take the appropriate action by resolving the conflict or letting the user resolve the conflict. You can monitor for document state changes with the `iCloud.shared.observeDocumentState(<#T##name: String##String#>, observer: <#T##Any#>, selector: <#T##Selector#>)` method. iCloudSync provides two methods that help handle a conflict with a document stored in iCloud. The first method lets you find all conflicting versions of a file:
 
-    NSArray *documentVersions = [[iCloud sharedCloud] findUnresolvedConflictingVersionsOfFile:documentName];
+    if let documentVersions: [NSFileVersion] = iCloud.shared.findUnresolvedConflictingVersionsOfFile("docName.ext") {
+        // Handle conflicts..    
+    }
 
 The array returned contains a list of NSFileVersion objects for the specified file. You can then use this list of file versions to either automatically merge changes or have the user select the correct version. Use the following method to resolve the conflict by submitting the "correct" version of the file.
 
-    [[iCloud sharedCloud] resolveConflictForFile:@"docName.ext" withSelectedFileVersion:[NSFileVersion object]];
+    iCloud.shared.resolveConflictForFile("docName.ext", with: NSFileVersion)
 
 
 ## Delegate
-iCloud Document Sync delegate methods notify you of the status of iCloud and your documents stored in iCloud. To use the iCloud delegate, subscribe to the `iCloudDelegate` protocol and then set the `delegate` property. To use the iCloudDocument delegate, subscribe to the `iCloudDocumentDelegate` protocol and then set the `delegate` property.
+iCloudSync delegate methods notify you of the status of iCloud and your documents stored in iCloud. To use the iCloud delegate, subscribe to the `iCloudDelegate` protocol and then set the `delegate` property. To use the iCloudDocument delegate, subscribe to the `iCloudDocumentDelegate` protocol and then set the `delegate` property.
 
-### iCloud Availability Changed
+### iCloud Availability Changed // Documentation updated until this section
 Called (automatically by iOS) when the availability of iCloud changes.  The first parameter, `cloudIsAvailable`, is a boolean value that is YES if iCloud is available and NO if iCloud is not available. The second parameter, `ubiquityToken`, is an iCloud ubiquity token that represents the current iCloud identity. Can be used to determine if iCloud is available and if the iCloud account has been changed (ex. if the user logged out and then logged in with a different iCloud account). This object may be nil if iCloud is not available for any reason. The third parameter, `ubiquityContainer`, is the root URL path to the current application's ubiquity container. This URL may be nil until the ubiquity container is initialized.
 
     - (void)iCloudAvailabilityDidChangeToState:(BOOL)cloudIsAvailable withUbiquityToken:(id)ubiquityToken withUbiquityContainer:(NSURL *)ubiquityContainer
@@ -227,7 +234,7 @@ When the files stored in your app's iCloud Document's directory change, this del
     - (void)iCloudFilesDidChange:(NSMutableArray *)files withNewFileNames:(NSMutableArray *)fileNames
 
 ### iCloud File Conflict
-When uploading multiple files to iCloud there is a possibility that files may exist both locally and in iCloud - causing a conflict. iCloud Document Sync can handle most conflict cases and will report the action taken in the log. When iCloud Document Sync can't figure out how to resolve the file conflict (this happens when both the modified date and contents are the same), it will pass the files and relevant information to you using this delegate method.  The delegate method contains two NSDictionaries, one which contains information about the iCloud file, and the other about the local file. Both dictionaries contain the same keys with the same types of objects stored at each key:  
+When uploading multiple files to iCloud there is a possibility that files may exist both locally and in iCloud - causing a conflict. iCloudSync can handle most conflict cases and will report the action taken in the log. When iCloudSync can't figure out how to resolve the file conflict (this happens when both the modified date and contents are the same), it will pass the files and relevant information to you using this delegate method.  The delegate method contains two NSDictionaries, one which contains information about the iCloud file, and the other about the local file. Both dictionaries contain the same keys with the same types of objects stored at each key:  
 * `fileContent` contains the NSData of the file.
 * `fileURL` contains the NSURL pointing to the file. This could possibly be used to gather more information about the file.
 * `modifiedDate` contains the NSDate representing the last modified date of the file.
