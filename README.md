@@ -209,7 +209,7 @@ Stop observing changes in a document's state by removing notifications for a spe
     let success: Bool = iCloud.shared.removeDocumentStateObserver("docName.ext", observer: self)
     
 ### File Conflict Handling
-When a document's state changes to *in conflict*, your application should take the appropriate action by resolving the conflict or letting the user resolve the conflict. You can monitor for document state changes with the `iCloud.shared.observeDocumentState(<#T##name: String##String#>, observer: <#T##Any#>, selector: <#T##Selector#>)` method. iCloudSync provides two methods that help handle a conflict with a document stored in iCloud. The first method lets you find all conflicting versions of a file:
+When a document's state changes to *in conflict*, your application should take the appropriate action by resolving the conflict or letting the user resolve the conflict. You can monitor for document state changes with the `iCloud.shared.observeDocumentState(name: String, observer: Any, selector: #Selector)` method. iCloudSync provides two methods that help handle a conflict with a document stored in iCloud. The first method lets you find all conflicting versions of a file:
 
     if let documentVersions: [NSFileVersion] = iCloud.shared.findUnresolvedConflictingVersionsOfFile("docName.ext") {
         // Handle conflicts..    
