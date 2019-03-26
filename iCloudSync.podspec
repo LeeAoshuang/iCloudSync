@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'iCloudSync'
-  s.version          = '8.0.20'
+  s.version          = '8.0.21'
   s.license          = { :type => 'MIT'  }
   s.summary          = 'Sync and Manage iCloud Documents. A fork, complete rewrite, of iCloud Document Sync written in pure Swift.'
  
@@ -22,8 +22,8 @@ only a few minutes.
   s.author           = { 'Oskari Rauta' => 'oskari.rauta@gmail.com' }
   s.source           = { :git => 'https://github.com/oskarirauta/iCloudSync.git', :tag => s.version.to_s }
 
-  s.swift_version = '4.2' 
-  s.ios.deployment_target = '11.4'
+  s.swift_version = '5.0' 
+  s.ios.deployment_target = '12.1'
   s.source_files = [
 			'iCloudSync/*.swift'
 		]
