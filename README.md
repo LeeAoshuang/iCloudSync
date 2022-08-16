@@ -57,7 +57,7 @@ There are multiple ways to add iCloudSync to your project and it is easy. Choose
 ### CocoaPods Setup
 The easiest way to install iCloud Document Sync is to use CocoaPods. To do so, simply add the following line to your Podfile:
 
-    pod 'iCloudDocumentSync', :git => 'https://github.com/oskarirauta/iCloudSync.git'
+    pod 'iCloudSync'
 
 ### Framework Setup
 Clone the project to your computer and build the *Framework* target. The `iCloudSync.framework` file will be copied to the project directory. Drag and drop the `.framework` file into your project.  
@@ -116,7 +116,7 @@ iCloudSync uses UIDocument and Data to store and manage files. All of the heavy 
 To create a new document or save and close an existing one, use the method below.
 
     iCloud.shared.saveAndCloseDocument("Name.ext", with: *content as data*, completion: {
-        document, data, error
+        document, data, error in
         if error == nil {
             // Code here to use the UIDocument or Data objects which have been passed with the completion handler
         }
@@ -163,7 +163,7 @@ First check if there was an error retrieving or creating the file, if there wasn
 
 You can also check whether or not a file actually exists in iCloud or not by using the method below.
 
-    let fileExists: Bool = iCloud.shared.fileExistsInCloud("docName.ext")
+    let fileExists: Bool = iCloud.shared.fileExistInCloud("docName.ext")
     if fileExists {
         // File Exists in iCloud
     }
