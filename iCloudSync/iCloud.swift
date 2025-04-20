@@ -231,7 +231,15 @@ open class iCloud: NSObject {
      */
 
     open var localDocumentsURL: URL? {
-        get { return self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first }
+        get {
+            if let url = self.fileManager.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Datas") {
+                if !self.fileManager.fileExists(atPath: url.path) {
+                    try? self.fileManager.createDirectory(at: url, withIntermediateDirectories: true)
+                }
+                return url
+            }
+            return nil
+        }
     }
     
     /**
@@ -427,7 +435,7 @@ open class iCloud: NSObject {
         }
     }
     
-    open func uploadLocalOfflineDocuments(repeatingHandler: ((String?, Error?) -> Void)!, completion: (() -> Void)? = nil) {
+    open func uploadLocalOfflineDocuments(repeatingHandler: ((String?, Error?) -> Void)? = nil, completion: (() -> Void)? = nil) {
         
         // Log upload
         if self.verboseLogging { NSLog("[iCloud] Beginning local file upload to iCloud. This process may take a long time.") }
@@ -446,7 +454,7 @@ open class iCloud: NSObject {
                 
                 guard !item.hasPrefix(".") else {
                     DispatchQueue.main.async {
-                        repeatingHandler(item, NSError(domain: "File in directory is hidden and will not be uploaded to iCloud.", code: 520, userInfo: ["Filename": item]) as Error)
+                        repeatingHandler?(item, NSError(domain: "File in directory is hidden and will not be uploaded to iCloud.", code: 520, userInfo: ["Filename": item]) as Error)
                     }
                     continue
                 }
@@ -468,7 +476,7 @@ open class iCloud: NSObject {
                     }
                     
                     DispatchQueue.main.async {
-                        repeatingHandler(item, err)
+                        repeatingHandler?(item, err)
                     }
                     continue
                 }
@@ -508,11 +516,11 @@ open class iCloud: NSObject {
                                     // Close the document
                                     document.close(completionHandler: {
                                         closed in
-                                        repeatingHandler(item, nil)
+                                        repeatingHandler?(item, nil)
                                     })
                                 } else {
                                     NSLog("[iCloud] Error while overwriting old iCloud file: @uploadLocalOfflineDocuments")
-                                    repeatingHandler(item, NSError(domain: "uploadLocalOfflineDocuments: error while saving the document " + document.fileURL.path + " to iCloud", code: 110, userInfo: ["Filename": item]) as Error)
+                                    repeatingHandler?(item, NSError(domain: "uploadLocalOfflineDocuments: error while saving the document " + document.fileURL.path + " to iCloud", code: 110, userInfo: ["Filename": item]) as Error)
                                 }
                             })
                         }
@@ -928,7 +936,7 @@ open class iCloud: NSObject {
                             NSLog("[iCloud] Both the iCloud file and the local file were last modified at the same time, however their contents do not match. You'll need to handle the conflict using the iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) delegate method.")
                             
                             DispatchQueue.main.async {
-                                self.delegate?.iCloudFileConflictBetweenCloudFile([
+                                self.delegate?.iCloudFileConflictBetweenCloudFileWhenEvict([
                                     "fileContents": document.contents,
                                     "fileURL": cloudURL,
                                     "modifiedDate": cloud_modDate
@@ -946,7 +954,7 @@ open class iCloud: NSObject {
                     NSLog("[iCloud] Failed to retrieve information about either or both, local and remote file. You will need to handle the conflict using iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) delegate method.")
 
                     DispatchQueue.main.async {
-                        self.delegate?.iCloudFileConflictBetweenCloudFile([
+                        self.delegate?.iCloudFileConflictBetweenCloudFileWhenEvict([
                             "fileURL": cloudURL
                             ], with: [
                                 "fileURL": localURL

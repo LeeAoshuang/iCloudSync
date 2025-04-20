@@ -73,6 +73,7 @@ public protocol iCloudDelegate: abstractiCloudDelegate {
      - Parameter localFile: Dictionary with the local file and various other information. This parameter contains the fileContent as NSData, fileURL as NSURL, and modifiedDate as NSDate.
      */
     func iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?)
+    func iCloudFileConflictBetweenCloudFileWhenEvict(_ cloudFile: [String: Any]?, with localFile: [String: Any]?)
 }
 
 public extension iCloudDelegate {
@@ -88,4 +89,6 @@ public extension iCloudDelegate {
     func iCloudFilesDidChange(_ files: [NSMetadataItem], with filenames: [String]) { }
     
     func iCloudFileConflictBetweenCloudFile(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) { }
+    
+    func iCloudFileConflictBetweenCloudFileWhenEvict(_ cloudFile: [String: Any]?, with localFile: [String: Any]?) { }
 }
